@@ -2,12 +2,16 @@
 
 // Importing core React Native components
 import React, { useState } from 'react'
-import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Pressable } from 'react-native'
+import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Pressable, Keyboard } from 'react-native'
 
 // Importing Firebase Authentication library
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+// Initialize Firebase Authenication
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+const auth = getAuth();
 
-const LoginScreen = () => {
+import { CommonActions } from '@react-navigation/native';
+
+const LoginScreen = ({ navigation }) => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -16,16 +20,53 @@ const LoginScreen = () => {
     // using the Firebase SDK
     const handleSignUp = () => {
 
-        const auth = getAuth();
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
-                console.log(user);
+                Keyboard.dismiss();
             })
             .catch((error) => {
                 alert(error.message);
             });
     }
+
+    // Sign in a user with an email and password
+    const handleLogin = () => {
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                Keyboard.dismiss();
+            })
+            .catch((error) => {
+                alert(error.message);
+            });
+    }
+
+    // Handle users changing their state
+    // This is called when the user is signed in or out
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is signed in, see docs for a list of available properties
+            // https://firebase.google.com/docs/reference/js/firebase.User
+
+            console.log('User is signed in: ', user.email);
+            console.log(user);
+
+            // Navigate to the HomeScreen and delete stack history
+            navigation.dispatch(
+                CommonActions.reset({
+                    routes: [
+                        {
+                            name: 'Home',
+                        },
+                    ],
+                })
+            );
+
+        } else {
+            console.log('User is signed out');
+        }
+    });
 
     return (
         <KeyboardAvoidingView
@@ -37,12 +78,15 @@ const LoginScreen = () => {
             <View style={styles.inputContainer}>
                 <TextInput
                     placeholder='Email'
+                    autoComplete='email'
+                    keyboardType='email-address'
                     value={email}
                     onChangeText={text => setEmail(text)}
                     style={styles.input}
                 />
                 <TextInput
                     placeholder='Password'
+                    autoComplete='password'
                     value={password}
                     onChangeText={text => setPassword(text)}
                     style={styles.input}
@@ -52,7 +96,7 @@ const LoginScreen = () => {
 
             <View style={styles.buttonContainer}>
                 <Pressable
-                    onPress={() => { }}
+                    onPress={handleLogin}
                     style={styles.button}
                 >
                     <Text style={[styles.buttonText]}>Login</Text>
