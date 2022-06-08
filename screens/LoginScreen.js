@@ -1,12 +1,12 @@
 'use strict';
 
 // Importing core React Native components
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Pressable, Keyboard } from 'react-native'
 
 // Importing Firebase Authentication library
 // Initialize Firebase Authenication
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, GithubAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth";
 const auth = getAuth();
 
 import { CommonActions } from '@react-navigation/native';
@@ -15,6 +15,49 @@ const LoginScreen = ({ navigation }) => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const googleSignIn = () => {
+        const providerGoogle = new GoogleAuthProvider();
+
+        signInWithPopup(auth, providerGoogle)
+            .then((result) => {
+                // This gives you a Google Access Token. You can use it to access the Google API.
+                const credential = GoogleAuthProvider.credentialFromResult(result);
+                const token = credential.accessToken;
+                // The signed-in user info.
+                const user = result.user;
+
+            }).catch((error) => {
+                alert(error.message);
+
+                // The email of the user's account used.
+                const email = error.customData.email;
+                // The AuthCredential type that was used.
+                const credential = GoogleAuthProvider.credentialFromError(error);
+            });
+    }
+
+    const githubSignIn = () => {
+        const providerGithub = new GithubAuthProvider();
+
+        signInWithPopup(auth, providerGithub)
+            .then((result) => {
+                // This gives you a GitHub Access Token. You can use it to access the GitHub API.
+                const credential = GithubAuthProvider.credentialFromResult(result);
+                const token = credential.accessToken;
+
+                // The signed-in user info.
+                const user = result.user;
+
+            }).catch((error) => {
+                alert(error.message);
+
+                // The email of the user's account used.
+                const email = error.customData.email;
+                // The AuthCredential type that was used.
+                const credential = GithubAuthProvider.credentialFromError(error);
+            });
+    }
 
     // Create a new user with an email and password
     // using the Firebase SDK
@@ -106,6 +149,18 @@ const LoginScreen = ({ navigation }) => {
                     style={[styles.button, styles.buttonOutline]}
                 >
                     <Text style={[styles.buttonOutlineText]}>Register</Text>
+                </Pressable>
+                <Pressable
+                    onPress={googleSignIn}
+                    style={[styles.button, styles.buttonOutline]}
+                >
+                    <Text style={[styles.buttonOutlineText]}>Google</Text>
+                </Pressable>
+                <Pressable
+                    onPress={githubSignIn}
+                    style={[styles.button, styles.buttonOutline]}
+                >
+                    <Text style={[styles.buttonOutlineText]}>Github</Text>
                 </Pressable>
             </View>
 
