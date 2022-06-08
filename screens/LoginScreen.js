@@ -1,12 +1,31 @@
 'use strict';
 
+// Importing core React Native components
 import React, { useState } from 'react'
 import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Pressable } from 'react-native'
+
+// Importing Firebase Authentication library
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 const LoginScreen = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    // Create a new user with an email and password
+    // using the Firebase SDK
+    const handleSignUp = () => {
+
+        const auth = getAuth();
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                console.log(user);
+            })
+            .catch((error) => {
+                alert(error.message);
+            });
+    }
 
     return (
         <KeyboardAvoidingView
@@ -39,7 +58,7 @@ const LoginScreen = () => {
                     <Text style={[styles.buttonText]}>Login</Text>
                 </Pressable>
                 <Pressable
-                    onPress={() => { }}
+                    onPress={handleSignUp}
                     style={[styles.button, styles.buttonOutline]}
                 >
                     <Text style={[styles.buttonOutlineText]}>Register</Text>

@@ -1,14 +1,22 @@
 'use strict';
 
-import { StyleSheet, Text, View } from 'react-native';
+// Importing core React Native components
+import { } from 'react-native';
 
+// Importing React Native Navigation
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+// Importing Firebase
+// Basically initalizing the app
+import fireBaseApp from './firebase';
+
+// Importing screens
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 
-const Stack = createNativeStackNavigator();
+
+const Stack = createNativeStackNavigator(); // Create a new stack navigator
 
 export default function App() {
 
@@ -21,12 +29,3 @@ export default function App() {
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
